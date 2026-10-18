@@ -1,17 +1,40 @@
 const express = require('express');
 const app = express();
 const router = express.Router();
-app.use(express.json());
+const { loginUser, registerUser } = require('../Controller/userController');
 
+const {isAuthorized} = require('../middlewares/auth');
 
-router.get('/health', (req, res) => {
+router.post('/login', (req, res) => {
+    const { userName, password } = req.body;
     try {
-        res.status(200).send('APIs are working , go on');
+        let resp = loginUser({ userName, password });
+        return res.status(200).send(resp);
     }
-    catch {
-        res.status(400).send('There is some issue in APIs , make sure to come back later');
+    catch (erorrMessage) {
+        return res.status(400).send(`error : ${erorrMessage.message}`);
     }
 });
 
+router.post('/users', (req, res) => {
+    const { userName, password } = req.body
+    try {
+        // console.log(userName, password,"the data");
+        registerUser({ userName, password });
+        return res.status(200).send('Registered successfully');
+    }
+    catch (erorrMessage) {
+        return res.status(400).send(`error : ${erorrMessage.message}`);
+    }
+});
 
-module.exports = router
+router.get('/health', (req, res) => {
+    try {
+        return res.status(200).send('APIs are working , go on');
+    }
+    catch {
+        return res.status(400).send('There is some issue in APIs , make sure to come back later');
+    }
+});
+
+module.exports =  router
