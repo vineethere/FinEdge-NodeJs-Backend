@@ -20,7 +20,7 @@ const getAllTransactions = (userId) => {
 //         {
 //             userId: 1,
 //             userName: 'airtribe',
-//             password: 'abcdef',
+//             password: 'abcdef',`
 //             transactions:[
 //                 {transactionId:1,type:"credited",amount:200},
 //                 {transactionId:2,type:"debited",amount:3000}
@@ -30,12 +30,22 @@ const getAllTransactions = (userId) => {
 // } 
 const updateTransaction = (userId, transactionId, transaction) => {
     const desiredUser = usersData.Users.find(item => item.userId === userId);
+
     if (!desiredUser) {
         throw new Error('User does not exist');
     }
 
-    const transactionIndex = desiredUser.transactions.findIndex(item => item.transactionId === transactionId);
-    
+    const transactionIndex = desiredUser.transactions.findIndex((item) => {
+        console.log(
+            item.transactionId,
+            typeof item.transactionId,
+            transactionId,
+            typeof transactionId
+        );
+        console.log(item.transactionId, transactionId, "now check");
+        return item.transactionId == transactionId;
+    });
+
     if (transactionIndex === -1) {
         throw new Error('Transaction does not exist');
     }
@@ -44,7 +54,37 @@ const updateTransaction = (userId, transactionId, transaction) => {
         ...desiredUser.transactions[transactionIndex],
         ...transaction
     };
-
-    return desiredUser.transactions[transactionIndex];
+    return desiredUser;
 };
-module.exports = { getAllTransactions, updateTransaction };
+
+const addTransaction = (userId, transaction) => {
+    const desiredUser = usersData.Users.find(item => item.userId === userId);
+    if (!desiredUser) {
+        throw Error('User does not exist, there might be some issue');
+    }
+    desiredUser.transactions.push(transaction);
+    console.log(desiredUser, desiredUser.transactions);
+    return desiredUser;
+}
+
+const deleteTransaction = (userId, transactionId) => {
+    const desiredUser = usersData.Users.find(item => item.userId === userId);
+    if (!desiredUser) {
+        throw Error('User does not exist, there might be some issue');
+    }
+
+    const exists = desiredUser.transactions.some(item => item.transactionId != null && item.transactionId == transactionId);
+    if (!exists) {
+        throw new Error('Transaction does not exist');
+    }
+
+    let updatedTransactions = desiredUser.transactions.filter(item => item.transactionId != transactionId);
+    desiredUser.transactions = updatedTransactions;
+    console.log(desiredUser, desiredUser.transactions);
+    return updatedTransactions;
+}
+
+
+
+
+module.exports = { getAllTransactions, updateTransaction, addTransaction, deleteTransaction };

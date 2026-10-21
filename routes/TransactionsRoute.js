@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllTransactions,updateTransaction } = require('../Controller/transactionController');
+const { getAllTransactions, updateTransaction, addTransaction, deleteTransaction } = require('../Controller/transactionController');
 const { isAuthorized } = require('../middlewares/auth');
 
 router.get('/transactions', isAuthorized, (req, res) => {
@@ -10,9 +10,9 @@ router.get('/transactions', isAuthorized, (req, res) => {
 
         return res.status(200).send(result);
     }
-    catch(err) {
+    catch (err) {
         console.error("Transaction Error:", err);
-        
+
         // 3. Send the specific error message for easier debugging
         return res.status(400).send(`error: ${err.message}`);
     }
@@ -22,12 +22,43 @@ router.get('/transactions', isAuthorized, (req, res) => {
 router.patch('/transactions', isAuthorized, (req, res) => {
     try {
         const userId = req.decodedToken.userId;
-        const {transactionId , transaction}=req.body;
-        const result = updateTransaction(userId,transactionId,transaction);
+        const { transactionId, transaction } = req.body;
+        const result = updateTransaction(userId, transactionId, transaction);
 
         return res.status(200).send(result);
     }
-    catch(err) {
+    catch (err) {
+        console.error("Transaction Error:", err);
+        return res.status(400).send(`error: ${err.message}`);
+    }
+});
+
+router.post('/transactions', isAuthorized, (req, res) => {
+    try {
+        const userId = req.decodedToken.userId;
+        const { transaction } = req.body;
+
+
+
+        const result = addTransaction(userId, transaction);
+
+        return res.status(200).send(result);
+    }
+    catch (err) {
+        console.error("Transaction Error:", err);
+        return res.status(400).send(`error: ${err.message}`);
+    }
+});
+
+router.delete('/transactions', isAuthorized, (req, res) => {
+    try {
+        const userId = req.decodedToken.userId;
+        const { transactionId } = req.body;
+        const result = deleteTransaction(userId, transactionId);
+
+        return res.status(200).send(result);
+    }
+    catch (err) {
         console.error("Transaction Error:", err);
         return res.status(400).send(`error: ${err.message}`);
     }
