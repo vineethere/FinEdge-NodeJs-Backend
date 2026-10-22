@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllTransactions, updateTransaction, addTransaction, deleteTransaction } = require('../Controller/transactionController');
+const { getAllTransactions, getATransaction, updateTransaction, addTransaction, deleteTransaction, returnSummary } = require('../Controller/transactionController');
 const { isAuthorized } = require('../middlewares/auth');
 
 router.get('/transactions', isAuthorized, (req, res) => {
@@ -63,5 +63,35 @@ router.delete('/transactions', isAuthorized, (req, res) => {
         return res.status(400).send(`error: ${err.message}`);
     }
 });
+
+router.get('/transaction/:transactionId', isAuthorized, (req, res) => {
+    try {
+        const userId = req.decodedToken.userId;
+        const { transactionId } = req.params;
+        console.log(transactionId, "transactionId");
+        const result = getATransaction(userId, transactionId);
+
+        return res.status(200).send(result);
+    }
+    catch (err) {
+        console.error("Transaction Error:", err);
+        return res.status(400).send(`error: ${err.message}`);
+    }
+});
+
+
+router.get('/summary', isAuthorized, (req, res) => {
+    try {
+        const userId = req.decodedToken.userId;
+        const result = returnSummary(userId);
+
+        return res.status(200).send(result);
+    }
+    catch (err) {
+        console.error("Transaction Error:", err);
+        return res.status(400).send(`error: ${err.message}`);
+    }
+});
+
 
 module.exports = router;

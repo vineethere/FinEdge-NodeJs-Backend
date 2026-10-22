@@ -36,13 +36,7 @@ const updateTransaction = (userId, transactionId, transaction) => {
     }
 
     const transactionIndex = desiredUser.transactions.findIndex((item) => {
-        console.log(
-            item.transactionId,
-            typeof item.transactionId,
-            transactionId,
-            typeof transactionId
-        );
-        console.log(item.transactionId, transactionId, "now check");
+
         return item.transactionId == transactionId;
     });
 
@@ -62,8 +56,19 @@ const addTransaction = (userId, transaction) => {
     if (!desiredUser) {
         throw Error('User does not exist, there might be some issue');
     }
-    desiredUser.transactions.push(transaction);
-    console.log(desiredUser, desiredUser.transactions);
+
+    let updatedTransactions = [...desiredUser.transactions];
+    let transactionIndex = updatedTransactions.findIndex(item => item.transactionId == transaction.transactionId);
+
+    if (transactionIndex === -1) {
+        updatedTransactions.push(transaction);
+    } else {
+        updatedTransactions[transactionIndex] = transaction;
+    }
+
+    // Assigned once here for both cases
+    desiredUser.transactions = updatedTransactions;
+
     return desiredUser;
 }
 
@@ -80,11 +85,33 @@ const deleteTransaction = (userId, transactionId) => {
 
     let updatedTransactions = desiredUser.transactions.filter(item => item.transactionId != transactionId);
     desiredUser.transactions = updatedTransactions;
-    console.log(desiredUser, desiredUser.transactions);
+
     return updatedTransactions;
 }
 
+const getATransaction = (userId, transactionId) => {
+    const desiredUser = usersData.Users.find(item => item.userId === userId);
+    if (!desiredUser) {
+        throw Error('User does not exist, there might be some issue');
+    }
+    const transactionIndex = desiredUser.transactions.findIndex(
+        item => item.transactionId != null && Number(item.transactionId) === Number(transactionId)
+    );
+    
+    if (transactionIndex === -1) {
+        throw new Error('Transaction does not exist');
+    }
 
+    return desiredUser.transactions[transactionIndex];
+};
 
+const returnSummary = (userId) => {
+    const desiredUser = usersData.Users.find(item => item.userId === userId);
+    if (!desiredUser) {
+        throw Error('User does not exist, there might be some issue');
+    }
 
-module.exports = { getAllTransactions, updateTransaction, addTransaction, deleteTransaction };
+    return desiredUser.transactions;
+};
+
+module.exports = { getAllTransactions, updateTransaction, addTransaction, deleteTransaction, getATransaction, returnSummary };

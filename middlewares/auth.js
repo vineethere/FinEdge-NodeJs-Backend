@@ -3,7 +3,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const isAuthorized = (req, res, next) => {
     const token = req.headers.authorization;
-    // console.log(req.headers);
+
 
     if (!token) {
         return res.status(400).send({ message: "Token is required" });

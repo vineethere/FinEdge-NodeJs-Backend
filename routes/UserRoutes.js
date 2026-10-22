@@ -19,7 +19,7 @@ router.post('/login', (req, res) => {
 router.post('/users', (req, res) => {
     const { userName, password } = req.body
     try {
-        // console.log(userName, password,"the data");
+
         registerUser({ userName, password });
         return res.status(200).send('Registered successfully');
     }

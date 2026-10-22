@@ -7,9 +7,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const registerUser = (user) => {
-    // console.log(user, "user");
-    
-    // Fix: check user.userName and user.password correctly
+
     if (!user || !user.userName) {
         throw new Error('userName is mandatory');
     }
